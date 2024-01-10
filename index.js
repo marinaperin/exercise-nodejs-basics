@@ -1,3 +1,4 @@
+import { log } from "console";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -5,7 +6,7 @@ import path from "path";
 dotenv.config();
 
 const apiKey = process.env.TMDB_API_KEY;
-const filePath = path.resolve("movies.json");
+const filePath = path.resolve("./movies.json");
 
 const arg = process.argv[2];
 const possibleArgs = ["now_playing", "top_rated", "upcoming"];
@@ -36,7 +37,12 @@ const readFile = () => {
 };
 
 let loadFromApi = false;
-const fileDetails = fs.statSync(filePath);
+let fileDetails;
+try {
+  fileDetails = fs.statSync(filePath);
+} catch (err) {
+  loadFromApi = true;
+}
 if (fileDetails) {
   const fileDet = dayjs(fileDetails.ctime);
   const seconds = dayjs().diff(fileDet, "seconds");
